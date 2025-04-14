@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WebGL Trekant</title>
+
+</head>
+    <body onload="InitWebGL();">
+        <canvas id="gl" width="800px" height="600px">
+            WebGL is not supported!
+        </canvas>
+
+        <textarea id="vs" spellcheck="false">
+            precision mediump float;
+            attribute vec3 Pos;
+            attribute vec3 Color;
+            varying vec3 vertexColor;
+            void main()
+            {
+                gl_Position = vec4(Pos, 1.0);
+                vertexColor = Color;
+            }
+        </textarea>
+
+        <textarea id="fs" spellcheck="false">
+            precision mediump float;
+            varying vec3 vertexColor;
+            void main()
+            {
+                gl_FragColor = vec4(vertexColor, 1.0);
+            }
+        </textarea>
+        <select id="shape" onchange="InitShaders();">
+            <option selected>Triangle</option>
+            <option>Quad</option>
+        </select>
+        <div id="ui">Generate UI for geometry here!</div>
+        <script src="js/scripts.js" defer>
+        </script>
+    </body>
+</html>
