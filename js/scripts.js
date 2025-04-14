@@ -35,7 +35,7 @@ function CreateQuad(width, height)
     vertices.length = 0;
     const w = width * 0.5;
     const h = height * 0.5;
-    AddTriangle(-w, h, 0.0, 1.0, 0.0, 0.0,
+    AddQuad(-w, h, 0.0, 1.0, 0.0, 0.0,
                 -w, -h, 0.0, 0.0, 1.0, 0.0,
                 w, -h, 0.0, 0.0, 0.0, 1.0,
                 w, h, 0.0, 1.0, 1.0, 0.0);
