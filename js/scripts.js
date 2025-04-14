@@ -6,6 +6,28 @@ var gl = document.getElementById('gl')
 document.getElementById('gl')
 .getContext('experimental-webgl');
 
+var mouseX = 0, mouseY = 0;
+var angle = [0.0, 0.0, 0.0, 1.0];
+var angleGL = 0;
+
+document.getElementById('gl').addEventListener
+(
+    'mousemove', function(e) 
+    {
+        if (e.buttons == 1)
+        {
+            // Venstre mussetast bliver trykket
+            angle[0] -= (mouseY - e.y) * 0.1;
+            angle[1] += (mouseY - e.x) * 0.1;
+            gl.uniform4fv(angleGL, new Float32Array(angle));
+            Render();
+        }
+        mouseX = e.x;
+        mouseY = e.y;
+    }
+);
+
+
 function AddVertex(x, y, z, r, g, b)
 {
     const index = vertices.length;
@@ -216,6 +238,8 @@ function CreateGeometryBuffers(program)
     
     //GPU buffer
     CreateVBO(program, new Float32Array(vertices));
+
+    angleGL = gl.getUniformLocation(program, 'Angle');
 
     //Aktiver shader programmet
     gl.useProgram(program);
