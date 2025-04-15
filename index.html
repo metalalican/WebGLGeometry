@@ -27,8 +27,8 @@
                 float coY = cos(Angle.y);
                 float siY = sin(Angle.y);
                 mat4 matY = mat4(vec4(coY, 0.0, -siY, 0.0),
-                                vec4(0.0, coX, siX, 0.0),
-                                vec4(0.0, -siX, coX, 0.0),
+                                vec4(0.0, 1.0, 0.0, 0.0),
+                                vec4(siY, 0.0, coY, 0.0),
                                 vec4(0.0, 0.0, 0.0, 1.0));
                 gl_Position = matY * matX * vec4(Pos, 1.0);
                 vertexColor = Color;
@@ -46,6 +46,7 @@
         <select id="shape" onchange="InitShaders();">
             <option selected>Triangle</option>
             <option>Quad</option>
+            <option>Box</option>
         </select>
         <div id="ui">Generate UI for geometry here!</div>
         <script src="js/scripts.js" defer>

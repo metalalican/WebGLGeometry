@@ -17,8 +17,8 @@ document.getElementById('gl').addEventListener
         if (e.buttons == 1)
         {
             // Venstre mussetast bliver trykket
-            angle[0] -= (mouseY - e.y) * 0.1;
-            angle[1] += (mouseY - e.x) * 0.1;
+            angle[0] -= (mouseY - e.y) * 0.01;
+            angle[1] += (mouseX - e.x) * 0.01;
             gl.uniform4fv(angleGL, new Float32Array(angle));
             Render();
         }
@@ -46,7 +46,7 @@ function CreateTriangle(width, height)
     vertices.length = 0;
     const w = width * 0.5;
     const h = height * 0.5;
-    AddTriangle(0.0, h, 0.0, 1.0, 0.0, 0.0,
+    AddTriangle(0, h, 0.0, 1.0, 0.0, 0.0,
                 -w, -h, 0.0, 0.0, 1.0, 0.0,
                 w, -h, 0.0, 0.0, 0.0, 1.0);
 }
@@ -58,9 +58,25 @@ function CreateQuad(width, height)
     const w = width * 0.5;
     const h = height * 0.5;
     AddQuad(-w, h, 0.0, 1.0, 0.0, 0.0,
-                -w, -h, 0.0, 0.0, 1.0, 0.0,
-                w, -h, 0.0, 0.0, 0.0, 1.0,
-                w, h, 0.0, 1.0, 1.0, 0.0);
+            -w, -h, 0.0, 0.0, 1.0, 0.0,
+            w, -h, 0.0, 0.0, 0.0, 1.0,
+            w, h, 0.0, 1.0, 1.0, 0.0);
+}
+
+function CreateBox(width, height, depth)
+{
+    vertices.length = 0;
+    const w = width * 0.5;
+    const h = height * 0.5;
+    const d = depth * 0.5;
+    AddBox(-w, h, d, 1.0, 0.0, 0.0,
+            -w, -h, d, 0.0, 1.0, 0.0,
+            w, -h, d, 0.0, 0.0, 1.0,
+            w, h, d, 1.0, 1.0, 0.0,
+            -w, h, -d, 0.5, 0.0, 0.5,
+            -w, -h, -d, 0.5, 0.5, 0.0,
+            w, -h, -d, 0.0, 0.5, 0.5,
+            w, h, -d, 0.5, 0.5, 0.5);
 }
 
 // Ny funktion til at bygge en trekant
@@ -75,6 +91,8 @@ function AddTriangle(x1, y1, z1, r1, g1, b1,
 
 // Benytter den nye funktion til trekanter for at bygge en firkant
 // ved at bygge to trekanter
+
+
 function AddQuad(x1, y1, z1, r1, g1, b1,
                 x2, y2, z2, r2, g2, b2,
                 x3, y3, z3, r3, g3, b3,
@@ -88,6 +106,52 @@ function AddQuad(x1, y1, z1, r1, g1, b1,
                 x4, y4, z4, r4, g4, b4,
                 x1, y1, z1, r1, g1, b1)
 }
+
+function AddBox(w, h, d)
+{
+    // Forside (rød)
+    AddQuad(
+        -w, -h, d, 1, 0, 0,
+         w, -h, d, 1, 0, 0,
+         w, h, d, 1, 0, 0,
+        -w, h, d, 1, 0, 0);
+
+    // Bagside (grøn)
+    AddQuad(
+         w, -h, -d, 0, 1, 0,
+        -w, -h, -d, 0, 1, 0,
+        -w, h, -d, 0, 1, 0,
+         w, h, -d, 0, 1, 0);
+
+    // Højre side (blå)
+    AddQuad(
+         w, -h,  d, 0, 0, 1,
+         w, -h, -d, 0, 0, 1,
+         w,  h, -d, 0, 0, 1,
+         w,  h,  d, 0, 0, 1);
+
+    // Venstre side (gul)
+    AddQuad(
+        -w, -h, -d, 1, 1, 0,
+        -w, -h,  d, 1, 1, 0,
+        -w,  h,  d, 1, 1, 0,
+        -w,  h, -d, 1, 1, 0);
+
+    // Top (magenta)
+    AddQuad(
+        -w,  h,  d, 1, 0, 1,
+         w,  h,  d, 1, 0, 1,
+         w,  h, -d, 1, 0, 1,
+        -w,  h, -d, 1, 0, 1);
+
+    // Bund (cyan)
+    AddQuad(
+        -w, -h, -d, 0, 1, 1,
+         w, -h, -d, 0, 1, 1,
+         w, -h,  d, 0, 1, 1,
+        -w, -h,  d, 0, 1, 1);
+}
+
 
 
 function InitWebGL()
@@ -216,19 +280,27 @@ function CreateGeometryUI()
     const w = ew ? ew.value : 1.0;
     const eh = document.getElementById('h');
     const h = eh ? eh.value : 1.0;
+    const ed = document.getElementById('d');
+    const d = ed ? ed.value : 1.0;
+
     document.getElementById('ui').innerHTML =
     'Width: <input type="number" id="w" value="'+ w +
-    '"onchange= "InitShaders();"><br>' + 
+    '" onchange= "InitShaders();"><br>' + 
     'Height: <input type="number" id="h" value="' + h +
-    '"onchange= "Initshaders();">';
-        let e = document.getElementById('shape');
-        switch (e.selectedIndex)
-        {
-            case 0: CreateTriangle(w, h);
-            break;
-            case 1: CreateQuad(w, h);
-            break;
-        }
+    '" onchange= "InitShaders();"><br>' +
+    'Depth: <input type="number" id="d" value="' + d +
+    '" onchange= "InitShaders();">';
+
+    let e = document.getElementById('shape');
+    switch (e.selectedIndex)
+    {
+        case 0: CreateTriangle(w, h);
+        break;
+        case 1: CreateQuad(w, h);
+        break;
+        case 2: CreateBox(w, h, d);
+        break;
+    }
 }
 
 function CreateGeometryBuffers(program)
